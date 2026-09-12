@@ -216,7 +216,7 @@ export default function SlotBookingView() {
         
         {/* Date Selector Cards */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-3 flex items-center gap-1.5">
+          <label className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3 flex items-center gap-1.5">
             <Calendar className="w-4 h-4 text-green-600" />
             <span>{t.selectDate}</span>
           </label>
@@ -249,7 +249,7 @@ export default function SlotBookingView() {
 
         {/* Crop Selection */}
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2 flex items-center gap-1.5">
+          <label className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-2 flex items-center gap-1.5">
             <Sprout className="w-4 h-4 text-green-600" />
             <span>{t.cropType}</span>
           </label>

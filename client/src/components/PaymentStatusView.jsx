@@ -100,7 +100,7 @@ export default function PaymentStatusView() {
           </div>
           <div 
             id="payment-total-amount"
-            className="text-4xl sm:text-5xl font-black text-slate-900 mt-2 font-display text-emerald-700"
+            className="text-4xl sm:text-5xl font-black text-emerald-700 mt-2 font-display"
           >
             ₹{booking.totalAmount?.toLocaleString('en-IN') || '0'}
           </div>
