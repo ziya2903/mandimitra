@@ -79,8 +79,6 @@ export default function FarmerAuth() {
         name: 'Ramesh Kumar',
         phone: '9876543210',
         village: 'Taraori',
-        crop: 'Wheat',
-        tokenNumber: 101,
         role: 'FARMER'
       });
     } else {

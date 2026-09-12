@@ -168,14 +168,22 @@ export default function PaymentStatusView() {
         </div>
       </div>
 
-      {/* Return Button */}
-      <button
-        onClick={() => setFarmerView('queue')}
-        className="w-full py-3.5 rounded-2xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors flex items-center justify-center gap-2"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>{lang === 'hi' ? 'कतार स्थिति पर वापस जाएं' : 'Back to Live Queue'}</span>
-      </button>
+      {/* Return Buttons */}
+      <div className="space-y-2">
+        <button
+          onClick={() => setFarmerView('queue')}
+          className="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>{lang === 'hi' ? 'कतार स्थिति पर वापस जाएं' : 'Back to Live Queue'}</span>
+        </button>
+        <button
+          onClick={() => setFarmerView('dashboard')}
+          className="w-full py-3 rounded-2xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-colors flex items-center justify-center gap-2"
+        >
+          <span>{lang === 'hi' ? 'डैशबोर्ड पर लौटें' : 'Back to Farmer Dashboard'}</span>
+        </button>
+      </div>
 
     </div>
   );

@@ -26,6 +26,9 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
 
+  // Active selected token number for multi-token farmer sessions
+  const [selectedTokenNumber, setSelectedTokenNumber] = useState(null);
+
   // Data & Realtime Sync State
   const [centres, setCentres] = useState([]);
   const [selectedCentreId, setSelectedCentreId] = useState('karnal-mandi');
@@ -188,12 +191,18 @@ export const AppProvider = ({ children }) => {
   // Farmer login handler
   const loginFarmer = (userData) => {
     setFarmerUser(userData);
+    if (userData?.tokenNumber) {
+      setSelectedTokenNumber(userData.tokenNumber);
+    } else {
+      setSelectedTokenNumber(null);
+    }
     localStorage.setItem('mandimitra_farmer', JSON.stringify(userData));
     setFarmerView('dashboard');
   };
 
   const logoutFarmer = () => {
     setFarmerUser(null);
+    setSelectedTokenNumber(null);
     localStorage.removeItem('mandimitra_farmer');
     setFarmerView('dashboard');
   };
@@ -244,12 +253,14 @@ export const AppProvider = ({ children }) => {
       });
       const data = await res.json();
       if (data.success) {
-        // Update farmer profile with active token
+        // Automatically switch to the newly booked token
+        if (data.booking?.tokenNumber) {
+          setSelectedTokenNumber(data.booking.tokenNumber);
+        }
         const updatedFarmer = {
           ...farmerUser,
           tokenNumber: data.booking.tokenNumber,
-          activeBookingId: data.booking.id,
-          crop: payload.crop
+          activeBookingId: data.booking.id
         };
         setFarmerUser(updatedFarmer);
         localStorage.setItem('mandimitra_farmer', JSON.stringify(updatedFarmer));
@@ -303,13 +314,31 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Computed: current farmer's active booking
-  const activeBooking = bookings.find(b => 
-    farmerUser && (
-      (farmerUser.tokenNumber && b.tokenNumber === farmerUser.tokenNumber) ||
-      (farmerUser.phone && b.phone === farmerUser.phone)
-    )
-  ) || null;
+  // Computed: all bookings belonging to this farmer
+  const farmerBookings = farmerUser?.phone 
+    ? bookings.filter(b => b.phone === farmerUser.phone) 
+    : [];
+
+  // Computed: current farmer's active booking (prioritizes explicitly selected or in-progress)
+  const activeBooking = (() => {
+    if (!farmerUser || farmerBookings.length === 0) return null;
+
+    // 1. If a specific token is selected, find it
+    if (selectedTokenNumber) {
+      const match = farmerBookings.find(b => b.tokenNumber === selectedTokenNumber);
+      if (match) return match;
+    }
+
+    // 2. Prioritize active, in-progress bookings (not yet 'Payment Done')
+    const inProgress = farmerBookings
+      .filter(b => b.status !== 'Payment Done')
+      .sort((a, b) => b.tokenNumber - a.tokenNumber);
+    if (inProgress.length > 0) return inProgress[0];
+
+    // 3. Fallback: most recent completed booking (highest token number)
+    const sorted = [...farmerBookings].sort((a, b) => b.tokenNumber - a.tokenNumber);
+    return sorted[0] || null;
+  })();
 
   return (
     <AppContext.Provider value={{
@@ -340,6 +369,9 @@ export const AppProvider = ({ children }) => {
       updateBookingStatus,
       updateProcurement,
       resetDemo,
+      farmerBookings,
+      selectedTokenNumber,
+      setSelectedTokenNumber,
       activeBooking
     }}>
       {children}
